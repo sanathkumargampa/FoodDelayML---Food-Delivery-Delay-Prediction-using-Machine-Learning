@@ -15,13 +15,23 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-# ── Load model artifacts ─────────────────────────────────────────────────────
-rf_model = joblib.load("rf_model.pkl")
-kmeans = joblib.load("kmeans.pkl")
-cluster_imputer = joblib.load("cluster_imputer.pkl")
-cluster_scaler = joblib.load("cluster_scaler.pkl")
-
-print("[OK] All model artifacts loaded successfully")
+# ── Load model artifacts (with auto-retrain fallback on version mismatch) ─────
+try:
+    rf_model = joblib.load("rf_model.pkl")
+    kmeans = joblib.load("kmeans.pkl")
+    cluster_imputer = joblib.load("cluster_imputer.pkl")
+    cluster_scaler = joblib.load("cluster_scaler.pkl")
+    print("[OK] All model artifacts loaded successfully")
+except Exception as e:
+    print(f"[WARN] Error loading model artifacts ({e}). Retraining models with current scikit-learn...")
+    import subprocess
+    import sys
+    subprocess.run([sys.executable, "train_model.py"], check=True)
+    rf_model = joblib.load("rf_model.pkl")
+    kmeans = joblib.load("kmeans.pkl")
+    cluster_imputer = joblib.load("cluster_imputer.pkl")
+    cluster_scaler = joblib.load("cluster_scaler.pkl")
+    print("[OK] Retrained and loaded all model artifacts successfully")
 
 
 @app.route("/health", methods=["GET"])
