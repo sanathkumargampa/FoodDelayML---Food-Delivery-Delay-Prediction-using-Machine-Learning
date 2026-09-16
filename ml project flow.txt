@@ -1,0 +1,12 @@
+1. data ingestion
+2. data cleaning
+3. data visualiztion (min 10 with insights)
+4. feature selection 
+5. seperating the num_cols, cat_cols, text_cols
+6. column transformer
+7. pipeline
+8. train test split
+9. model fitting
+10. model prediction
+11. model evalution (training score, testing score, validation score)
+12. model saving
